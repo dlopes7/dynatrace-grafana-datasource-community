@@ -1,0 +1,23 @@
+{
+  "name": "dlopes7-dynatrace-community-grafana-datasource",
+  "version": "1.0.0",
+  "description": "Dynatrace community datasource",
+  "scripts": {
+    "build": "grafana-toolkit plugin:build",
+    "test": "grafana-toolkit plugin:test",
+    "dev": "grafana-toolkit plugin:dev",
+    "watch": "grafana-toolkit plugin:dev --watch"
+  },
+  "author": "David Lopes",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@grafana/data": "latest",
+    "@grafana/toolkit": "latest",
+    "@grafana/runtime": "latest",
+    "@grafana/ui": "latest",
+    "@types/lodash": "latest"
+  },
+  "resolutions": {
+    "rxjs": "6.6.3"
+  }
+}

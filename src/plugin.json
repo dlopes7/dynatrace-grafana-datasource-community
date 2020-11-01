@@ -1,0 +1,39 @@
+{
+  "type": "datasource",
+  "name": "Dynatrace",
+  "id": "dynatrace-community-grafana-datasource",
+  "metrics": true,
+  "backend": true,
+  "executable": "gpx_dynatrace_community",
+  "info": {
+    "description": "Dynatrace community datasource",
+    "author": {
+      "name": "David Lopes",
+      "url": ""
+    },
+    "keywords": [
+      "dynatrace"
+    ],
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "links": [
+      {
+        "name": "Website",
+        "url": "https://github.com/dlopes7/dynatrace-community-grafana-datasource"
+      },
+      {
+        "name": "License",
+        "url": "https://github.com/grafana/simple-datasource-backend/blob/master/LICENSE"
+      }
+    ],
+    "screenshots": [],
+    "version": "%VERSION%",
+    "updated": "%TODAY%"
+  },
+  "dependencies": {
+    "grafanaVersion": "7.x.x",
+    "plugins": []
+  }
+}

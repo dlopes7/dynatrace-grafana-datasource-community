@@ -10,12 +10,12 @@ import (
 	"net/http"
 )
 
-type httpClient struct {
-	client http.Client
-	token  string
+type HttpClient struct {
+	Client http.Client
+	Token  string
 }
 
-func (c *httpClient) makeRequest(ctx context.Context, method string, url string, model interface{}, body interface{}) error {
+func (c *HttpClient) makeRequest(ctx context.Context, method string, url string, model interface{}, body interface{}) error {
 
 	req, err := c.newRequest(method, url, body)
 	if err != nil {
@@ -29,9 +29,9 @@ func (c *httpClient) makeRequest(ctx context.Context, method string, url string,
 	}
 }
 
-func (c *httpClient) do(ctx context.Context, req http.Request, model interface{}) error {
+func (c *HttpClient) do(ctx context.Context, req http.Request, model interface{}) error {
 
-	resp, err := ctxhttp.Do(ctx, &c.client, &req)
+	resp, err := ctxhttp.Do(ctx, &c.Client, &req)
 	if err != nil {
 		return err
 	}
@@ -51,7 +51,7 @@ func (c *httpClient) do(ctx context.Context, req http.Request, model interface{}
 	return nil
 }
 
-func (c *httpClient) newRequest(method string, url string, body interface{}) (*http.Request, error) {
+func (c *HttpClient) newRequest(method string, url string, body interface{}) (*http.Request, error) {
 
 	var buf io.ReadWriter
 	if body != nil {
@@ -67,7 +67,7 @@ func (c *httpClient) newRequest(method string, url string, body interface{}) (*h
 		return nil, err
 	}
 
-	req.Header.Set("Authorization", fmt.Sprintf("Api-Token %s", c.token))
+	req.Header.Set("Authorization", fmt.Sprintf("Api-Token %s", c.Token))
 
 	return req, nil
 }

@@ -9,9 +9,9 @@ import (
 func TestGetClusterVersion(t *testing.T) {
 
 	api := APIClient{
-		tenantURL: os.Getenv("DYNATRACE_TENANT_URL"),
-		httpClient: httpClient{
-			token: os.Getenv("DYNATRACE_API_TOKEN"),
+		TenantURL: os.Getenv("DYNATRACE_TENANT_URL"),
+		HttpClient: HttpClient{
+			Token: os.Getenv("DYNATRACE_API_TOKEN"),
 		},
 	}
 
@@ -22,5 +22,24 @@ func TestGetClusterVersion(t *testing.T) {
 		t.FailNow()
 	}
 	t.Logf("Got cluster version: %s", clusterVersion.Version)
+
+}
+
+func TestQueryMetrics(t *testing.T) {
+
+	api := APIClient{
+		TenantURL: os.Getenv("DYNATRACE_TENANT_URL"),
+		HttpClient: HttpClient{
+			Token: os.Getenv("DYNATRACE_API_TOKEN"),
+		},
+	}
+
+	ctx := context.Background()
+	metrics, err := api.QueryMetrics(ctx)
+	if err != nil {
+		t.Errorf("error querying metrics %s", err.Error())
+		t.FailNow()
+	}
+	t.Logf("Got %d pages of metrics", len(metrics))
 
 }

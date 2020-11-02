@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/instancemgmt"
-	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 	"net/http"
+	"strings"
 )
 
 type dynatraceDatasourceInstance struct {
@@ -15,8 +15,6 @@ type dynatraceDatasourceInstance struct {
 }
 
 func newDatasourceInstance(settings backend.DataSourceInstanceSettings) (instancemgmt.Instance, error) {
-
-	log.DefaultLogger.Info("Got settings from Grafana", "settings", settings)
 
 	dtSettings := &Settings{}
 
@@ -26,10 +24,10 @@ func newDatasourceInstance(settings backend.DataSourceInstanceSettings) (instanc
 	}
 
 	c := APIClient{
-		tenantURL: dtSettings.TenantURL,
-		httpClient: httpClient{
-			client: http.Client{},
-			token:  settings.DecryptedSecureJSONData["apiToken"],
+		TenantURL: strings.TrimRight(dtSettings.TenantURL, "/"),
+		HttpClient: HttpClient{
+			Client: http.Client{},
+			Token:  settings.DecryptedSecureJSONData["apiToken"],
 		},
 	}
 	return &dynatraceDatasourceInstance{

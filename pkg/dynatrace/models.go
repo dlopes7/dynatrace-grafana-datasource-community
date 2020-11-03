@@ -1,5 +1,7 @@
 package dynatrace
 
+import "github.com/grafana/grafana-plugin-sdk-go/backend"
+
 type Settings struct {
 	TenantURL string `json:"TenantURL"`
 }
@@ -21,7 +23,15 @@ type MetricSeriesCollection struct {
 }
 
 type MetricSeries struct {
-	Timestamps []int64   `json:"timestamps"`
-	Dimensions []string  `json:"dimensions"`
-	Values     []float64 `json:"values"`
+	Timestamps []int64    `json:"timestamps"`
+	Dimensions []string   `json:"dimensions"`
+	Values     []*float64 `json:"values"`
+}
+
+type MetricQuery struct {
+	MetricSelector string `json:"metricSelector"`
+	Resolution     string `json:"resolution"`
+	EntitySelector string `json:"entitySelector"`
+
+	TimeRange backend.TimeRange `json:"-"`
 }

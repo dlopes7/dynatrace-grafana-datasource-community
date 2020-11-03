@@ -7,7 +7,9 @@ import (
 	"fmt"
 	"golang.org/x/net/context/ctxhttp"
 	"io"
+	"io/ioutil"
 	"net/http"
+	"net/url"
 )
 
 type HttpClient struct {
@@ -15,9 +17,9 @@ type HttpClient struct {
 	Token  string
 }
 
-func (c *HttpClient) makeRequest(ctx context.Context, method string, url string, model interface{}, body interface{}) error {
+func (c *HttpClient) makeRequest(ctx context.Context, method string, url string, queryParams url.Values, model interface{}, body interface{}) error {
 
-	req, err := c.newRequest(method, url, body)
+	req, err := c.newRequest(method, url, queryParams, body)
 	if err != nil {
 		return err
 	}
@@ -38,7 +40,11 @@ func (c *HttpClient) do(ctx context.Context, req http.Request, model interface{}
 	defer resp.Body.Close()
 
 	if resp.StatusCode >= 400 {
-		return fmt.Errorf("error making request for %s, status code: %d", req.URL, resp.StatusCode)
+		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+		return fmt.Errorf("error making request for %s, status code: %d, response: %s", req.URL, resp.StatusCode, string(bodyBytes))
 	}
 
 	if model != nil {
@@ -51,7 +57,7 @@ func (c *HttpClient) do(ctx context.Context, req http.Request, model interface{}
 	return nil
 }
 
-func (c *HttpClient) newRequest(method string, url string, body interface{}) (*http.Request, error) {
+func (c *HttpClient) newRequest(method string, url string, queryParams url.Values, body interface{}) (*http.Request, error) {
 
 	var buf io.ReadWriter
 	if body != nil {
@@ -67,6 +73,7 @@ func (c *HttpClient) newRequest(method string, url string, body interface{}) (*h
 		return nil, err
 	}
 
+	req.URL.RawQuery = queryParams.Encode()
 	req.Header.Set("Authorization", fmt.Sprintf("Api-Token %s", c.Token))
 
 	return req, nil

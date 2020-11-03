@@ -2,6 +2,8 @@ package dynatrace
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/datasource"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/instancemgmt"
@@ -28,12 +30,17 @@ func NewDatasource() datasource.ServeOpts {
 func (ds *dynatraceDatasource) QueryData(ctx context.Context, req *backend.QueryDataRequest) (*backend.QueryDataResponse, error) {
 	log.DefaultLogger.Info("QueryData", "request", req)
 
+	dsInstance, err := ds.getDSInstance(req.PluginContext)
+	if err != nil {
+		return nil, err
+	}
+
 	response := backend.NewQueryDataResponse()
 
-	//for _, q := range req.Queries {
-	//	res := td.query(ctx, q)
-	//	response.Responses[q.RefID] = res
-	//}
+	for _, q := range req.Queries {
+		res := ds.query(ctx, q, *dsInstance)
+		response.Responses[q.RefID] = res
+	}
 
 	return response, nil
 }
@@ -69,4 +76,34 @@ func (ds *dynatraceDatasource) getDSInstance(pluginContext backend.PluginContext
 		return nil, err
 	}
 	return instance.(*dynatraceDatasourceInstance), nil
+}
+
+func (ds *dynatraceDatasource) query(ctx context.Context, q backend.DataQuery, dsInstance dynatraceDatasourceInstance) backend.DataResponse {
+
+	res := backend.DataResponse{}
+	metricQuery, err := ReadQuery(q)
+	if err != nil {
+		res.Error = err
+	} else {
+		log.DefaultLogger.Info("Processing query", "query", metricQuery, "timerange", metricQuery.TimeRange)
+		frames, err := dsInstance.query(ctx, metricQuery)
+		if err != nil {
+			res.Error = err
+		} else {
+			res.Frames = frames
+		}
+	}
+
+	return res
+
+}
+
+func ReadQuery(query backend.DataQuery) (MetricQuery, error) {
+	model := MetricQuery{}
+	if err := json.Unmarshal(query.JSON, &model); err != nil {
+		return model, fmt.Errorf("could not read query: %w", err)
+	}
+
+	model.TimeRange = query.TimeRange
+	return model, nil
 }

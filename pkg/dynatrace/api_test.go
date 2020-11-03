@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"testing"
+	"time"
 )
 
 func TestGetClusterVersion(t *testing.T) {
@@ -35,7 +36,7 @@ func TestQueryMetrics(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	metrics, err := api.QueryMetrics(ctx)
+	metrics, err := api.QueryMetrics(ctx, "builtin:host.cpu.idle", "", time.Now().UnixNano()/1000000, time.Now().UnixNano()/1000000, "")
 	if err != nil {
 		t.Errorf("error querying metrics %s", err.Error())
 		t.FailNow()
